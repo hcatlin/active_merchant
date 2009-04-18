@@ -35,7 +35,7 @@ module ActiveMerchant #:nodoc:
       ssl_request(:post, url, data, headers)
     end
     
-    def socket_request(host, location, data)
+    def socket_request(host, port, data)
       retry_exceptions do
         begin
           connection = TCPsocket.open host, port
