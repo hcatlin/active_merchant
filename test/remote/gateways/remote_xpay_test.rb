@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../../test_helper'
 class RemoteXpayTest < Test::Unit::TestCase
 
   def setup
-    @gateway = XpayGateway.new
+    @gateway = XPayGateway.new
     
     @gateway.site_reference = "testwoobius12861"
     @gateway.certificate_path = File.dirname(__FILE__) + '/../../testwoobius12861testcerts.pem'
@@ -29,7 +29,7 @@ class RemoteXpayTest < Test::Unit::TestCase
   def test_successful_purchase
     assert response = @gateway.purchase(@amount, @credit_cards[:visa], @options)
     assert_success response
-    assert_equal 'REPLACE WITH SUCCESS MESSAGE', response.message
+    assert_equal "The transaction was processed successfully.", response.message
   end
 
   # def test_unsuccessful_purchase
