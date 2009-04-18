@@ -35,6 +35,28 @@ module ActiveMerchant #:nodoc:
       ssl_request(:post, url, data, headers)
     end
     
+    def socket_request(host, location, data)
+      retry_exceptions do
+        begin
+          connection = TCPsocket.open host, port
+          
+          connection.write data
+          response = connection.read
+          connection.close
+          
+          response
+        rescue EOFError => e
+          raise ConnectionError, "The remote server dropped the connection"
+        rescue Errno::ECONNRESET => e
+          raise ConnectionError, "The remote server reset the connection"
+        rescue Errno::ECONNREFUSED => e
+          raise RetriableConnectionError, "The remote server refused the connection"
+        rescue Timeout::Error, Errno::ETIMEDOUT => e
+          raise ConnectionError, "The connection to the remote server timed out"
+        end
+      end
+    end
+    
     private
     def retry_exceptions
       retries = MAX_RETRIES
@@ -104,6 +126,6 @@ module ActiveMerchant #:nodoc:
         end
       end
     end
-    
+        
   end
 end
