@@ -7,6 +7,8 @@ class RemoteXpayTest < Test::Unit::TestCase
     
     @gateway.site_reference = "testwoobius12861"
     @gateway.certificate_path = File.dirname(__FILE__) + '/../../testwoobius12861testcerts.pem'
+    @gateway.host = 'localhost'
+    @gateway.port = 54444
     
     @amount = 100
     @credit_cards = {
