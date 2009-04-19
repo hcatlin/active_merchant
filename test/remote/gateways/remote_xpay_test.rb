@@ -12,12 +12,27 @@ class RemoteXpayTest < Test::Unit::TestCase
     
     @amount = 100
     @credit_cards = {
-      :visa         => credit_card('4111111111111111'),
-      :mastercard   => credit_card('5111111111111118', :type => :master)
+      :visa             => credit_card('4111111111111111'),
+      :mastercard       => credit_card('5111111111111118', :type => :master),
+      :uk_maestro1      => credit_card('6759050000000005', :type => :maestro, :verification_value => '1'),
+      :uk_maestro2      => credit_card('6759000000000018', :type => :maestro, :verification_value => ''),
+      :solo             => credit_card('676770676770676775', :type => :solo, :verification_value => '1'),
+      :visa_delta       => credit_card('4659010000000005', :type => :delta),
+      :visa_electron    => credit_card('49174917491749174', :type => :electron),
+      :visa_purchasing  => credit_card('4484000000000007', :type => :purchasing),
+      :mastercard_debit => credit_card('5573470000000001', :type => :master),
+      :american_express => credit_card('377737773777380', :type => :american_express)
     }
     @declined_credit_cards = {
-      :visa         => credit_card('4242424242424242'),
-      :mastercard   => credit_card('5111111111111142', :type => :master)
+      :visa             => credit_card('4242424242424242'),
+      :mastercard       => credit_card('5111111111111142', :type => :master),
+      :uk_maestro1      => credit_card('6759050000000062', :type => :maestro, :verification_value => '1'),
+      :uk_maestro2      => credit_card('6759000000000042', :type => :maestro, :verification_value => ''),
+      :solo             => credit_card('676770676770676882', :type => :solo, :verification_value => '1'),
+      :visa_delta       => credit_card('4659010000000062', :type => :delta),
+      :visa_purchasing  => credit_card('4484000000000072', :type => :purchasing),
+      :mastercard_debit => credit_card('5573470000000092', :type => :master),
+      :american_express => credit_card('377737773777422', :type => :american_express)
     }
     
     @options = { 

@@ -24,7 +24,8 @@ module ActiveMerchant #:nodoc:
         :switch => "MAESTRO",
         :maestro => "MAESTRO",
         :electron => "ELECTRON",
-        :purchasing => "PURCHASING"
+        :purchasing => "PURCHASING",
+        :american_express => "AMEX"
       }
       
       API_VERSION = '3.51'
@@ -124,7 +125,8 @@ module ActiveMerchant #:nodoc:
           }
         }
         
-        if [ CREDIT_CARDS[:SWITCH], CREDIT_CARDS[:SOLO] ].include?(creditcard.type)
+        if [ CREDIT_CARDS[:switch], CREDIT_CARDS[:solo], CREDIT_CARDS[:maestro] ].
+            include?(CREDIT_CARDS[creditcard.type.to_sym])
           post[:PaymentMethod][:CreditCard][:Issue] = creditcard.verification_value
         else
           post[:PaymentMethod][:CreditCard][:SecurityCode] = creditcard.verification_value
