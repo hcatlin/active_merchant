@@ -41,6 +41,8 @@ class RemoteXpayTest < Test::Unit::TestCase
       :description => 'Store Purchase',
       :currency => 'GBP'
     }
+
+    @responses = {}
   end
   
   def test_successful_purchase
@@ -85,7 +87,6 @@ class RemoteXpayTest < Test::Unit::TestCase
   end
   
   def test_authorize_and_void
-    @responses = {}
     @credit_cards.each do |type, credit_card|
       assert response = @gateway.authorize(@amount, credit_card, @options)
       assert_success response
@@ -105,7 +106,6 @@ class RemoteXpayTest < Test::Unit::TestCase
   end
   
   def test_authorize_and_capture_and_refund
-    @responses = {}
     @credit_cards.each do |type, credit_card|
       assert response = @gateway.authorize(@amount, credit_card, @options)
       assert_success response
@@ -132,5 +132,23 @@ class RemoteXpayTest < Test::Unit::TestCase
       assert_equal "The transaction was processed successfully.", response.message
     end
   end
-
+  
+  def test_purchase_and_repeat
+    @credit_cards.each do |type, credit_card|
+      assert response = @gateway.purchase(@amount, credit_card, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+      @responses[type] = response
+    end
+    @credit_cards.each do |type, credit_card|
+      identification = {
+        :transaction_reference => @responses[type].transaction_reference,
+        :transaction_verifier => @responses[type].transaction_verifier
+      }
+      assert response = @gateway.repeat(@amount, identification, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+    end    
+  end
+  
 end

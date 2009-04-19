@@ -94,6 +94,15 @@ module ActiveMerchant #:nodoc:
         
         commit(TRANSACTIONS[:credit], nil, post)
       end
+      
+      def repeat(money, identification, options={})
+        post = {}
+        add_parent_transaction_data(post, identification)
+        add_invoice(post, options)
+        add_amount(post, money, options, 1)
+        
+        commit(TRANSACTIONS[:purchase], money, post)        
+      end
     
       private
       
