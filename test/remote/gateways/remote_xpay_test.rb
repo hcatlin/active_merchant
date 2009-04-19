@@ -43,66 +43,66 @@ class RemoteXpayTest < Test::Unit::TestCase
     }
   end
   
-  # def test_successful_purchase
-  #   @credit_cards.each do |type, credit_card|
-  #     assert response = @gateway.purchase(@amount, credit_card, @options)
-  #     assert_success response
-  #     assert_equal "The transaction was processed successfully.", response.message
-  #   end
-  # end
-  # 
-  # def test_unsuccessful_purchase
-  #   @declined_credit_cards.each do |type, credit_card|
-  #     assert response = @gateway.purchase(@amount, credit_card, @options)
-  #     assert_failure response
-  #     assert_equal "The transaction was declined by the card issuer.", response.message
-  #   end
-  # end
-  # 
-  # def test_authorize_and_capture
-  #   @responses = {}
-  #   @credit_cards.each do |type, credit_card|
-  #     assert response = @gateway.authorize(@amount, credit_card, @options)
-  #     assert_success response
-  #     assert_equal "The transaction was processed successfully.", response.message
-  #     @responses[type] = response
-  #   end
-  #   sleep 5 # Needs to wait before checking results - if you get failures, try increasing this
-  #   @credit_cards.each do |type, credit_card|    
-  #     assert response = @gateway.capture(@amount, @responses[type].transaction_reference)
-  #     assert_success response
-  #     assert_equal "The transaction was processed successfully.", response.message
-  #   end
-  # end
-  # 
-  # def test_unsuccessful_capture
-  #   assert response = @gateway.capture(@amount, '')
-  #   assert_failure response
-  #   assert_equal "(5100) Missing TransactionReference", response.message
-  #   assert response = @gateway.capture(@amount, '123')
-  #   assert_failure response
-  #   assert_equal "(3100) Invalid ParentTransactionReference", response.message
-  # end
-  # 
-  # def test_authorize_and_void
-  #   @responses = {}
-  #   @credit_cards.each do |type, credit_card|
-  #     assert response = @gateway.authorize(@amount, credit_card, @options)
-  #     assert_success response
-  #     assert_equal "The transaction was processed successfully.", response.message
-  #     @responses[type] = response
-  #   end
-  #   sleep 5 # Needs to wait before checking results - if you get failures, try increasing this
-  #   @credit_cards.each do |type, credit_card|
-  #     identification = {
-  #       :transaction_reference => @responses[type].transaction_reference,
-  #       :transaction_verifier => @responses[type].transaction_verifier
-  #     }
-  #     assert response = @gateway.void(identification)
-  #     assert_success response
-  #     assert_equal "The transaction was processed successfully.", response.message
-  #   end
-  # end
+  def test_successful_purchase
+    @credit_cards.each do |type, credit_card|
+      assert response = @gateway.purchase(@amount, credit_card, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+    end
+  end
+  
+  def test_unsuccessful_purchase
+    @declined_credit_cards.each do |type, credit_card|
+      assert response = @gateway.purchase(@amount, credit_card, @options)
+      assert_failure response
+      assert_equal "The transaction was declined by the card issuer.", response.message
+    end
+  end
+  
+  def test_authorize_and_capture
+    @responses = {}
+    @credit_cards.each do |type, credit_card|
+      assert response = @gateway.authorize(@amount, credit_card, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+      @responses[type] = response
+    end
+    sleep 5 # Needs to wait before checking results - if you get failures, try increasing this
+    @credit_cards.each do |type, credit_card|    
+      assert response = @gateway.capture(@amount, @responses[type].transaction_reference)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+    end
+  end
+  
+  def test_unsuccessful_capture
+    assert response = @gateway.capture(@amount, '')
+    assert_failure response
+    assert_equal "(5100) Missing TransactionReference", response.message
+    assert response = @gateway.capture(@amount, '123')
+    assert_failure response
+    assert_equal "(3100) Invalid ParentTransactionReference", response.message
+  end
+  
+  def test_authorize_and_void
+    @responses = {}
+    @credit_cards.each do |type, credit_card|
+      assert response = @gateway.authorize(@amount, credit_card, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+      @responses[type] = response
+    end
+    sleep 5 # Needs to wait before checking results - if you get failures, try increasing this
+    @credit_cards.each do |type, credit_card|
+      identification = {
+        :transaction_reference => @responses[type].transaction_reference,
+        :transaction_verifier => @responses[type].transaction_verifier
+      }
+      assert response = @gateway.void(identification)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+    end
+  end
   
   def test_authorize_and_capture_and_refund
     @responses = {}
