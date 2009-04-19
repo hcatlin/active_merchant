@@ -98,7 +98,7 @@ class RemoteXpayTest < Test::Unit::TestCase
         :transaction_reference => @responses[type].transaction_reference,
         :transaction_verifier => @responses[type].transaction_verifier
       }
-      assert response = @gateway.void(identification, credit_card, @options)
+      assert response = @gateway.void(identification)
       assert_success response
       assert_equal "The transaction was processed successfully.", response.message
     end

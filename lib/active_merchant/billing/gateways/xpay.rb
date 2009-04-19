@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/xpay/xpay_response'
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class XPayGateway < Gateway
-      cattr_accessor :site_reference, :certificate_path, :host, :port
+      cattr_accessor :site_reference, :certificate_path, :host, :port, :debug
       
       # The countries the gateway supports merchants from as 2 digit ISO country codes
       self.supported_countries = ['GB']
@@ -79,11 +79,8 @@ module ActiveMerchant #:nodoc:
         commit(TRANSACTIONS[:settlement], money, post)
       end
       
-      def void(identification, creditcard, options = {})
+      def void(identification, options = {})
         post = {}
-        add_invoice(post, options)
-        add_address(post, creditcard, options)
-        add_customer_data(post, options)
         add_parent_transaction_data(post, identification)
         add_auth_reversal(post)
         
@@ -181,7 +178,14 @@ module ActiveMerchant #:nodoc:
       end
       
       def commit(action, money, parameters)
-        XPayResponse.new socket_request @@host, @@port, post_data(action, parameters)
+        if @@debug
+          puts "request: #{post_data(action, parameters)}"
+          r = XPayResponse.new socket_request @@host, @@port, post_data(action, parameters)
+          puts "response: #{r.to_xml}"
+          r
+        else
+          XPayResponse.new socket_request @@host, @@port, post_data(action, parameters)
+        end
       end
 
       def message_from(response)
