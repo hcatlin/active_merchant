@@ -74,7 +74,7 @@ class RemoteXpayTest < Test::Unit::TestCase
       assert_equal "The transaction was processed successfully.", response.message
     end
   end
-
+  
   def test_unsuccessful_capture
     assert response = @gateway.capture(@amount, '')
     assert_failure response
@@ -83,20 +83,26 @@ class RemoteXpayTest < Test::Unit::TestCase
     assert_failure response
     assert_equal "(3100) Invalid ParentTransactionReference", response.message
   end
+  
+  def test_authorize_and_void
+    @responses = {}
+    @credit_cards.each do |type, credit_card|
+      assert response = @gateway.authorize(@amount, credit_card, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+      @responses[type] = response
+    end
+    sleep 5 # Needs to wait before checking results - if you get failures, try increasing this
+    @credit_cards.each do |type, credit_card|
+      identification = {
+        :transaction_reference => @responses[type].transaction_reference,
+        :transaction_verifier => @responses[type].transaction_verifier
+      }
+      assert response = @gateway.void(identification, credit_card, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+    end
+  end
+  
 
-  # def test_failed_capture
-  #   assert response = @gateway.capture(@amount, '')
-  #   assert_failure response
-  #   assert_equal 'REPLACE WITH GATEWAY FAILURE MESSAGE', response.message
-  # end
-  # 
-  # def test_invalid_login
-  #   gateway = XpayGateway.new(
-  #               :login => '',
-  #               :password => ''
-  #             )
-  #   assert response = gateway.purchase(@amount, @credit_card, @options)
-  #   assert_failure response
-  #   assert_equal 'REPLACE WITH FAILURE MESSAGE', response.message
-  # end
 end
