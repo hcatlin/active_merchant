@@ -75,22 +75,15 @@ class RemoteXpayTest < Test::Unit::TestCase
     end
   end
 
-  # def test_unsuccessful_purchase
-  #   assert response = @gateway.purchase(@amount, @declined_card[:visa], @options)
-  #   assert_failure response
-  #   assert_equal 'REPLACE WITH FAILED PURCHASE MESSAGE', response.message
-  # end
-  # 
-  # def test_authorize_and_capture
-  #   amount = @amount
-  #   assert auth = @gateway.authorize(amount, @credit_card[:visa], @options)
-  #   assert_success auth
-  #   assert_equal 'Success', auth.message
-  #   assert auth.authorization
-  #   assert capture = @gateway.capture(amount, auth.authorization)
-  #   assert_success capture
-  # end
-  # 
+  def test_unsuccessful_capture
+    assert response = @gateway.capture(@amount, '')
+    assert_failure response
+    assert_equal "(5100) Missing TransactionReference", response.message
+    assert response = @gateway.capture(@amount, '123')
+    assert_failure response
+    assert_equal "(3100) Invalid ParentTransactionReference", response.message
+  end
+
   # def test_failed_capture
   #   assert response = @gateway.capture(@amount, '')
   #   assert_failure response
