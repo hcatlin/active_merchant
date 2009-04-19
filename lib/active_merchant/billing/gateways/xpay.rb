@@ -50,7 +50,7 @@ module ActiveMerchant #:nodoc:
         super
       end  
 
-      def authorise(money, creditcard, options = {})
+      def authorize(money, creditcard, options = {})
         post = {}
         add_invoice(post, options)
         add_creditcard(post, creditcard)
