@@ -8,7 +8,7 @@ class RemoteXpayTest < Test::Unit::TestCase
     @gateway.site_reference = "testwoobius12861"
     @gateway.certificate_path = File.dirname(__FILE__) + '/../../testwoobius12861testcerts.pem'
     @gateway.host = 'localhost'
-    @gateway.port = 54444
+    @gateway.port = 5444
     
     @amount = 100
     @credit_cards = {
@@ -29,9 +29,19 @@ class RemoteXpayTest < Test::Unit::TestCase
   end
   
   def test_successful_purchase
-    assert response = @gateway.purchase(@amount, @credit_cards[:visa], @options)
-    assert_success response
-    assert_equal "The transaction was processed successfully.", response.message
+    @credit_cards.each do |type, credit_card|
+      assert response = @gateway.purchase(@amount, credit_card, @options)
+      assert_success response
+      assert_equal "The transaction was processed successfully.", response.message
+    end
+  end
+
+  def test_unsuccessful_purchase
+    @declined_credit_cards.each do |type, credit_card|
+      assert response = @gateway.purchase(@amount, credit_card, @options)
+      assert_failure response
+      assert_equal "The transaction was declined by the card issuer.", response.message
+    end
   end
 
   # def test_unsuccessful_purchase

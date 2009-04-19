@@ -52,8 +52,8 @@ module ActiveMerchant #:nodoc:
       def authorise(money, creditcard, options = {})
         post = {}
         add_invoice(post, options)
-        add_creditcard(post, creditcard)        
-        add_address(post, creditcard, options)   
+        add_creditcard(post, creditcard)
+        add_address(post, creditcard, options)
         add_customer_data(post, options)
         add_amount(post, money, options, 0)
         
@@ -118,7 +118,7 @@ module ActiveMerchant #:nodoc:
       def add_creditcard(post, creditcard)
         post[:PaymentMethod] = {
           :CreditCard => {
-            :Type           => creditcard.type.upcase,
+            :Type           => CREDIT_CARDS[creditcard.type.to_sym],
             :Number         => creditcard.number,
             :ExpiryDate     => "#{'%02d' % creditcard.month}/#{'%02d' % creditcard.year.to_s.slice(2..-1)}"
           }

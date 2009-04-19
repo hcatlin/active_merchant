@@ -29,6 +29,10 @@ module ActiveMerchant #:nodoc:
         @xml = REXML::Document.new xml_response
       end
       
+      def to_xml
+        @xml.to_s
+      end
+      
       def to_s
         if success?
           'The transaction was processed successfully.'
