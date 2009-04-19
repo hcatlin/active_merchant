@@ -11,7 +11,7 @@ module ActiveMerchant #:nodoc:
       TRANSACTIONS = {
         :purchase         => 'AUTH',
         :void             => 'AUTHREVERSAL',
-        :refund           => 'REFUND',
+        :credit           => 'REFUND',
         :refund_reversal  => 'REFUNDREVERSAL',
         :settlement       => 'SETTLEMENT'
       }
@@ -87,7 +87,22 @@ module ActiveMerchant #:nodoc:
         commit(TRANSACTIONS[:void], nil, post)
       end
     
+      def credit(money, identification, options = {})
+        post = {}
+        add_parent_transaction_data(post, identification)
+        add_refund(post, money)
+        
+        commit(TRANSACTIONS[:credit], nil, post)
+      end
+    
       private
+      
+      def add_refund(post, money)
+        post[:Operation] = {
+          :SiteReference                  => @@site_reference,
+          :Amount                         => amount(money)
+        }
+      end
       
       def add_auth_reversal(post)
         post[:Operation] = {
