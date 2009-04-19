@@ -105,7 +105,8 @@ module ActiveMerchant #:nodoc:
       end
     
       private
-      
+      # ====
+      # Operation blocks:
       def add_refund(post, money)
         post[:Operation] = {
           :SiteReference                  => @@site_reference,
@@ -116,15 +117,6 @@ module ActiveMerchant #:nodoc:
       def add_auth_reversal(post)
         post[:Operation] = {
           :SiteReference                  => @@site_reference
-        }
-      end
-      
-      def add_parent_transaction_data(post, identification)
-        post[:PaymentMethod] = {
-          :CreditCard => {
-            :TransactionVerifier          => identification[:transaction_verifier],
-            :ParentTransactionReference   => identification[:transaction_reference]
-          }
         }
       end
       
@@ -148,6 +140,36 @@ module ActiveMerchant #:nodoc:
         }
       end
       
+      # ====
+      # PaymentMethod blocks:
+      def add_parent_transaction_data(post, identification)
+        post[:PaymentMethod] = {
+          :CreditCard => {
+            :TransactionVerifier          => identification[:transaction_verifier],
+            :ParentTransactionReference   => identification[:transaction_reference]
+          }
+        }
+      end
+      
+      def add_creditcard(post, creditcard)
+        post[:PaymentMethod] = {
+          :CreditCard => {
+            :Type                         => CREDIT_CARDS[creditcard.type.to_sym],
+            :Number                       => creditcard.number,
+            :ExpiryDate                   => "#{'%02d' % creditcard.month}/#{'%02d' % creditcard.year.to_s.slice(2..-1)}"
+          }
+        }
+        
+        if [ CREDIT_CARDS[:switch], CREDIT_CARDS[:solo], CREDIT_CARDS[:maestro] ].
+            include?(CREDIT_CARDS[creditcard.type.to_sym])
+          post[:PaymentMethod][:CreditCard][:Issue] = creditcard.verification_value
+        else
+          post[:PaymentMethod][:CreditCard][:SecurityCode] = creditcard.verification_value
+        end
+      end
+
+      # ====
+      # Additional blocks:
       def add_address(post, creditcard, options)
         post[:CustomerInfo] ||= {}
         post[:CustomerInfo][:Postal] = {
@@ -181,26 +203,8 @@ module ActiveMerchant #:nodoc:
         }
       end
       
-      def add_creditcard(post, creditcard)
-        post[:PaymentMethod] = {
-          :CreditCard => {
-            :Type                         => CREDIT_CARDS[creditcard.type.to_sym],
-            :Number                       => creditcard.number,
-            :ExpiryDate                   => "#{'%02d' % creditcard.month}/#{'%02d' % creditcard.year.to_s.slice(2..-1)}"
-          }
-        }
-        
-        if [ CREDIT_CARDS[:switch], CREDIT_CARDS[:solo], CREDIT_CARDS[:maestro] ].
-            include?(CREDIT_CARDS[creditcard.type.to_sym])
-          post[:PaymentMethod][:CreditCard][:Issue] = creditcard.verification_value
-        else
-          post[:PaymentMethod][:CreditCard][:SecurityCode] = creditcard.verification_value
-        end
-      end
-      
-      def parse(body)
-      end
-      
+      # ====
+      # Other methods:
       def commit(action, money, parameters)
         if @@debug
           puts "request: #{post_data(action, parameters)}"
@@ -212,9 +216,6 @@ module ActiveMerchant #:nodoc:
         end
       end
 
-      def message_from(response)
-      end
-      
       def post_data(action, parameters = {})
         x = Builder::XmlMarkup.new :indent => 2
         
