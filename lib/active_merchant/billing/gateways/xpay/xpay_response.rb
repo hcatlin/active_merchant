@@ -14,15 +14,15 @@ module ActiveMerchant #:nodoc:
       end
       
       def transaction_reference
-        @params[:transaction_reference]
+        @xml.root.get_elements('Response/OperationResponse/TransactionReference').first.text
       end
       
       def auth_code
-        @params[:auth_code]
+        @xml.root.get_elements('Response/OperationResponse/AuthCode').first.text
       end
       
       def transaction_verifier
-        @params[:transaction_verifier]
+        @xml.root.get_elements('Response/OperationResponse/TransactionVerifier').first.text
       end
       
       def initialize(xml_response)

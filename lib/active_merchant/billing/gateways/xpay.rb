@@ -70,16 +70,34 @@ module ActiveMerchant #:nodoc:
         add_amount(post, money, options, 1)
              
         commit(TRANSACTIONS[:purchase], money, post)
-      end                       
+      end
+      
+      def capture(money, identification, options = {})
+        post = {}
+        add_settlement(post, money, identification, options)
+        
+        commit(TRANSACTIONS[:settlement], money, post)
+      end
     
       private
       
+      def add_settlement(post, money, identification, options)
+        post[:Operation] = {
+          :SiteReference        => @@site_reference,
+          :TransactionReference => identification,
+          :Currency             => options[:currency] || currency(money),
+          :SettleDate           => 'NEXT',
+          :SettleStatus         => '0',
+          :SettleAmount         => amount(money)          
+        }
+      end
+      
       def add_amount(post, money, options, settlement_day=1)
         post[:Operation] = {
-          :Amount           => amount(money),
-          :Currency         => options[:currency] || currency(money),
-          :SiteReference    => @@site_reference,
-          :SettlementDay    => settlement_day
+          :Amount               => amount(money),
+          :Currency             => options[:currency] || currency(money),
+          :SiteReference        => @@site_reference,
+          :SettlementDay        => settlement_day
         }
       end
       
@@ -87,41 +105,41 @@ module ActiveMerchant #:nodoc:
         post[:CustomerInfo] ||= {}
         post[:CustomerInfo][:Postal] = {
           :Name => {
-            :FirstName      => creditcard.first_name,
-            :LastName       => creditcard.last_name
+            :FirstName          => creditcard.first_name,
+            :LastName           => creditcard.last_name
           },
-          :Company          => options[:billing_address][:company],
-          :Street           => options[:billing_address][:address1],
-          :City             => options[:billing_address][:city],
-          :StateProv        => options[:billing_address][:state],
-          :PostalCode       => options[:billing_address][:zip],
-          :CountryCode      => options[:billing_address][:country]
+          :Company              => options[:billing_address][:company],
+          :Street               => options[:billing_address][:address1],
+          :City                 => options[:billing_address][:city],
+          :StateProv            => options[:billing_address][:state],
+          :PostalCode           => options[:billing_address][:zip],
+          :CountryCode          => options[:billing_address][:country]
         }
       end
       
       def add_customer_data(post, options)
         post[:CustomerInfo] ||= {}
         post[:CustomerInfo][:Telecom] = {
-          :Phone            => options[:phone]
+          :Phone                => options[:phone]
         }
         post[:CustomerInfo][:Online] = {
-          :Email            => options[:email]
+          :Email                => options[:email]
         }
       end
 
       def add_invoice(post, options)
         post[:Order] = {
-          :OrderReference   => options[:order_id],
-          :OrderInformation => options[:description]
+          :OrderReference       => options[:order_id],
+          :OrderInformation     => options[:description]
         }
       end
       
       def add_creditcard(post, creditcard)
         post[:PaymentMethod] = {
           :CreditCard => {
-            :Type           => CREDIT_CARDS[creditcard.type.to_sym],
-            :Number         => creditcard.number,
-            :ExpiryDate     => "#{'%02d' % creditcard.month}/#{'%02d' % creditcard.year.to_s.slice(2..-1)}"
+            :Type               => CREDIT_CARDS[creditcard.type.to_sym],
+            :Number             => creditcard.number,
+            :ExpiryDate         => "#{'%02d' % creditcard.month}/#{'%02d' % creditcard.year.to_s.slice(2..-1)}"
           }
         }
         
