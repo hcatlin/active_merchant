@@ -156,7 +156,7 @@ module ActiveMerchant #:nodoc:
           :CreditCard => {
             :Type                         => CREDIT_CARDS[creditcard.type.to_sym],
             :Number                       => creditcard.number,
-            :ExpiryDate                   => "#{'%02d' % creditcard.month}/#{'%02d' % creditcard.year.to_s.slice(2..-1)}"
+            :ExpiryDate                   => "#{'%02d' % creditcard.month}/#{creditcard.year.to_s.slice(2..-1)}"
           }
         }
         
