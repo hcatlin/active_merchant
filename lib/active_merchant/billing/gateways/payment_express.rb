@@ -6,8 +6,11 @@ module ActiveMerchant #:nodoc:
     # In NZ DPS supports ANZ, Westpac, National Bank, ASB and BNZ. 
     # In Australia DPS supports ANZ, NAB, Westpac, CBA, St George and Bank of South Australia. 
     # The Maybank in Malaysia is supported and the Citibank for Singapore.
+
+    # THIS FORK HAS HAD DEFAULT CURRENCY CHANGED TO USD
+
     class PaymentExpressGateway < Gateway
-      self.default_currency = 'NZD'
+      self.default_currency = 'USD'
       # PS supports all major credit cards; Visa, Mastercard, Amex, Diners, BankCard & JCB. 
       # Various white label cards can be accepted as well; Farmers, AirNZCard and Elders etc. 
       # Please note that not all acquirers and Eftpos networks can support some of these card types.
