@@ -51,11 +51,12 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
   def test_should_create_customer_profile_request
     @gateway.expects(:ssl_post).returns(successful_create_customer_profile_response)
 
-    assert response = @gateway.create_customer_profile(@options)
+    assert response = @gateway.create_customer_profile(@options.merge(:validation_mode => :test))
     assert_instance_of Response, response
     assert_success response
     assert_equal @customer_profile_id, response.authorization
     assert_equal "Successful.", response.message
+    assert_equal "This output is only present if the ValidationMode input parameter is passed with a value of testMode or liveMode", response.params['validation_direct_response']
   end
 
   def test_should_create_customer_payment_profile_request
@@ -305,6 +306,7 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
           </message> 
         </messages> 
         <customerProfileId>#{@customer_profile_id}</customerProfileId> 
+        <validationDirectResponse>This output is only present if the ValidationMode input parameter is passed with a value of testMode or liveMode</validationDirectResponse>
       </createCustomerProfileResponse>
     XML
   end

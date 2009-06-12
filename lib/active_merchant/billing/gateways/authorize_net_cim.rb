@@ -105,7 +105,9 @@ module ActiveMerchant #:nodoc:
       #
       # ==== Options
       #
-      # TODO
+      # * <tt>:validation_mode</tt> -- <tt>:live</tt> or <tt>:test</tt> In Test Mode, only field validation is performed. 
+      #
+      # TODO: include remaining options
       def create_customer_profile(options)
         # TODO Add requires
         request = build_request(:create_customer_profile, options)
@@ -370,6 +372,8 @@ module ActiveMerchant #:nodoc:
       
       def build_create_customer_profile_request(xml, options)
         add_profile(xml, options[:profile])
+
+        xml.tag!('validationMode', CIM_VALIDATION_MODES[options[:validation_mode]]) if options[:validation_mode]
 
         xml.target!
       end
