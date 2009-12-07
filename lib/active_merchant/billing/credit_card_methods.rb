@@ -76,7 +76,10 @@ module ActiveMerchant #:nodoc:
           return 'bogus' if valid_test_mode_card_number?(number)
 
           card_companies.reject { |c,p| c == 'maestro' }.each do |company, pattern|
-            return company.dup if number =~ pattern 
+            if number =~ pattern
+              return "maestro" if company == "switch"
+              return company.dup
+            end
           end
           
           return 'maestro' if number =~ card_companies['maestro']
